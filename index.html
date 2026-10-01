@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>حكاية أميرتي اجمل اميرة في الدنيا كللللها 👑🖤</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;900&display=swap');
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Tajawal', sans-serif;
+      margin: 0; padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1a0307 0%, #4a0e17 50%, #0d0204 100%);
+      color: #fce8ef;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* خلفية الإيموجيات المتساقطة */
+    .bg-emoji-container {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .falling-emoji {
+      position: absolute;
+      top: -40px;
+      font-size: 1.4rem;
+      opacity: 0.35;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to { transform: translateY(105vh) rotate(360deg); }
+    }
+
+    /* الحاوية الرئيسية بتصميم البيرجاندي والأسود */
+    .app-card {
+      width: 100%;
+      max-width: 380px;
+      height: 680px;
+      background: rgba(22, 5, 9, 0.92);
+      border: 1px solid #7a1c2b;
+      border-radius: 28px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    /* الشريط العلوي ومؤشر التقدم */
+    .top-bar {
+      padding: 16px 20px 10px;
+      background: rgba(35, 8, 14, 0.95);
+      border-bottom: 1px solid #52131d;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .top-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stage-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #f7a8b8;
+    }
+
+    .score-badge {
+      background: #4a0e17;
+      color: #ffd1dc;
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: 1px solid #7a1c2b;
+    }
+
+    /* نقاط مراحل الانتقال */
+    .step-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #380a11;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      width: 22px;
+      border-radius: 10px;
+      background: #b8233e;
+    }
+
+    /* الشاشات والمراحل */
+    .stage-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stage {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+      text-align: center;
+      opacity: 0;
+      transform: translateX(30px);
+      pointer-events: none;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .stage.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: #f7a8b8;
+      margin-bottom: 6px;
+    }
+
+    p {
+      font-size: 0.9rem;
+      color: #d1a7b4;
+      line-height: 1.5;
+    }
+
+    /* الأزرار العصرية */
+    .btn {
+      background: linear-gradient(135deg, #801428, #b8233e);
+      color: #ffffff;
+      border: 1px solid #e63956;
+      padding: 13px 28px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(184, 35, 62, 0.4);
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.1s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    canvas {
+      width: 100%;
+      height: 340px;
+      border-radius: 20px;
+      background: #120205;
+      border: 1px solid #52131d;
+    }
+
+    /* عناصر التحكم */
+    .controls-row {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .ctrl-btn {
+      flex: 1;
+      background: #2b070e;
+      color: #f7a8b8;
+      border: 1px solid #52131d;
+      padding: 10px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .ctrl-btn:active {
+      background: #b8233e;
+      color: #fff;
+    }
+
+    /* شبكة X - O */
+    .ttt-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: 100%;
+      max-width: 280px;
+      margin: auto;
+    }
+
+    .ttt-cell {
+      height: 80px;
+      background: #1f0408;
+      border: 1.5px solid #52131d;
+      border-radius: 16px;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #f7a8b8;
+    }
+
+    /* نافذة المودال */
+    .modal {
+      display: none;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(10, 2, 4, 0.93);
+      z-index: 100;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-card {
+      background: #1c0408;
+      border: 1.5px solid #801428;
+      border-radius: 22px;
+      padding: 22px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      text-align: center;
+    }
+
+    textarea, input {
+      width: 100%;
+      background: #170306;
+      border: 1px solid #7a1c2b;
+      border-radius: 14px;
+      padding: 12px;
+      color: #fce8ef;
+      text-align: center;
+      font-size: 0.9rem;
+      outline: none;
+      margin: 10px 0;
+    }
+
+    textarea::placeholder, input::placeholder {
+      color: #8c5d6a;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-emoji-container" id="bgEmojiContainer"></div>
+
+<div class="app-card">
+  <!-- الشريط العلوي والتنقل بالنقاط -->
+  <div class="top-bar">
+    <div class="top-info">
+      <div class="stage-title" id="stageBadge">حكاية دلوعتييي 👑</div>
+      <div class="score-badge" id="scoreBadge">النقاط: 0</div>
+    </div>
+    <div class="step-dots">
+      <div class="dot active" id="dot0"></div>
+      <div class="dot" id="dot1"></div>
+      <div class="dot" id="dot2"></div>
+      <div class="dot" id="dot3"></div>
+      <div class="dot" id="dot4"></div>
+      <div class="dot" id="dot5"></div>
+    </div>
+  </div>
+
+  <div class="stage-container">
+    <!-- Stage 0: Intro -->
+    <div class="stage active" id="stage0">
+      <div style="margin-top: 50px;">
+        <div style="font-size: 3.5rem; margin-bottom: 10px;">👑</div>
+        <h1>عالم أميرتي نور عينيي</h1>
+        <p style="margin-top: 10px;">مغامرة يعني والله في احلى وهعملها هعملهاااا بس عشان المسكر بتاعي زعلان 💕<br>جاهزة تبدأي الحكاية؟</p>
+      </div>
+      <button class="btn" onclick="startStage(1)">يلا بينا يمسكر ✨</button>
+    </div>
+
+    <!-- Stage Canvas Container -->
+    <div class="stage" id="gameStage">
+      <canvas id="mainCanvas" width="340" height="340"></canvas>
+      <div class="controls-row">
+        <button class="ctrl-btn" onclick="moveLeft()">◀ تيجي يمين</button>
+        <button class="ctrl-btn" onclick="actionBtn()">قفز / التقاط ✨</button>
+        <button class="ctrl-btn" onclick="moveRight()">واجي شمال ▶</button>
+      </div>
+    </div>
+
+    <!-- Stage 4: Tic Tac Toe -->
+    <div class="stage" id="stageTTT">
+      <div style="margin-top: 10px;">
+        <h1 style="font-size: 1.3rem;">تحدي X - O الملكي</h1>
+        <p>العبي واكسبي الكمبيوتر النوتي دا عشان في جايزة في الاخر 💕</p>
+      </div>
+      <div class="ttt-grid">
+        <div class="ttt-cell" onclick="playTTT(0)"></div>
+        <div class="ttt-cell" onclick="playTTT(1)"></div>
+        <div class="ttt-cell" onclick="playTTT(2)"></div>
+        <div class="ttt-cell" onclick="playTTT(3)"></div>
+        <div class="ttt-cell" onclick="playTTT(4)"></div>
+        <div class="ttt-cell" onclick="playTTT(5)"></div>
+        <div class="ttt-cell" onclick="playTTT(6)"></div>
+        <div class="ttt-cell" onclick="playTTT(7)"></div>
+        <div class="ttt-cell" onclick="playTTT(8)"></div>
+      </div>
+    </div>
+
+    <!-- Secret Key Stage -->
+    <div class="stage" id="stageSecret">
+      <div style="margin-top: 50px; width: 100%;">
+        <h1>القفل السرّي للخزنة</h1>
+        <p style="margin-top: 10px;">ادخلي تاريخ حكايتنا المميزة سوا 💖</p>
+        <input type="text" id="secretKey" placeholder="">
+        <p id="secretErr" style="color: #ff5252; display: none; font-size: 0.85rem;">التاريخ مش مظبوط يا روحي! فكري تاني 🙈</p>
+      </div>
+      <button class="btn" onclick="checkSecretKey()">افتحي الخزنة ✨</button>
+    </div>
+
+    <!-- Stage Final: Love Message -->
+    <div class="stage" id="stageFinal">
+      <div style="width: 100%; margin-top: 10px;">
+        <h1 style="font-size: 1.3rem;">رسالة من صاصتك لقلبك</h1>
+        <div style="margin: 12px 0; font-size: 0.88rem; color: #fce8ef; background: #1f0408; padding: 14px; border-radius: 16px; text-align: justify; border: 1px solid #52131d; line-height: 1.6; max-height: 190px; overflow-y: auto;">
+          يا أجمل نعمة ربنا رزقني بيها في حياتي بحبك وبحب كل تفصيلة فيكي بحب ضحكتك اللي بتنور دنيتي وبحب وجودك اللي بيديني أمان وراحة بال مش عند حد في العالم كله اللعبة دي بسيطة ورقيقة بس معمولة بكل حب عشان ترسم ابتسامة على وشك الحلو بحبك يا احمل حاحة في حياتي كلها وبعشقكككككك وبموت فيكي والله يعيوني 💕
+        </div>
+        <textarea id="replyMsg" rows="3" placeholder="اكتبيلي ردك ورسالتك هنا يا روح قلبي..."></textarea>
+      </div>
+      <button class="btn" onclick="alert('خدتي لقطة الشاشة للرد ابعتيهاااا لياااا😭😭📸💖')">إرسال لـصاصتكك📸</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="loveModal">
+    <div class="modal-card">
+      <h2 id="mTitle" style="font-size: 1.1rem; color: #f7a8b8;"></h2>
+      <p id="mText" style="font-size: 0.88rem; color: #d1a7b4; margin: 14px 0;"></p>
+      <button class="btn" onclick="closeModalAndContinue()">المرحلة التالية ✨</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentStage = 0;
+  let canvas = document.getElementById('mainCanvas');
+  let ctx = canvas.getContext('2d');
+  let animId = null;
+  let score = 0;
+
+  // خلفية الإيموجيات
+  const bgEmojis = ['🌹', '✨', '👑', '🖤', '🍓', '🍷'];
+  const emojiContainer = document.getElementById('bgEmojiContainer');
+  for (let i = 0; i < 18; i++) {
+    let el = document.createElement('div');
+    el.className = 'falling-emoji';
+    el.innerText = bgEmojis[Math.floor(Math.random() * bgEmojis.length)];
+    el.style.left = Math.random() * 100 + '%';
+    el.style.animationDuration = (Math.random() * 4 + 4) + 's';
+    el.style.animationDelay = (Math.random() * 5) + 's';
+    emojiContainer.appendChild(el);
+  }
+
+  const messages = {
+    1: { title: "أشطر أميرة في الكون!", text: "مهما طلعتي لفوق في السحاب مش هتوصل لمكانتك العالية جوا قلبي بحبك بحبك والله ومقدش اشوفك زعلانة ينور عيني والله انا بحبك بحبك ينور عيني ومفيش حد في الدنيا دي كلها يعوض مكانك في قلبي انا بحبك وهفضل طول عمري بحبك 💕" },
+    2: { title: "بستان الورود اكتمل!", text: "كل وردة جمعتيها بتفكرني بحنيتك بجمالك بعيونك بحلاوتك انتي حلوة عارفة انتي حلوة ازاي حلوة اوووووفر دووووز هععععع والله جميلة اوي يمور عيني مشوفتك والله مشوفتش في حلاوتك ولا هشوف حتى كل مرة والله ببقى عايز اشوفك اكتر اضحكلك بحبك اوي بحبببب حياتي معاكي والله💖" },
+    3: { title: "صانعة الحلوى الملكية!", text: "حياتي معاكي وبيكي بقت أطعم وأحلى حاجة في دنيتي الحاجة اللي بجيلها كل يوم وعارف ان هبقى اكتر انسان مبسوط لمجرد اني بكلمك بس انا بحبك لحد اخر يوم في عمري ينور عيني والله بحبككك 💕" },
+    4: { title: "فزتي بالتحدي", text: "أنتي النجمة اللي بتنورلي عمري كله وبحبك ينجمتي يا اجما حاجة في دنيتي كلها بحبك والله وعمرك متشكي في حبي ليكي عشان والله انا اكتر واحد بحبك في الدنيا كلها والله انا بحبك وبموووت فيكي ينور عيني والله💕" }
+  };
+
+  function updateDots(stg) {
+    for (let i = 0; i <= 5; i++) {
+      let d = document.getElementById('dot' + i);
+      if (d) d.className = i === stg ? 'dot active' : 'dot';
+    }
+  }
+
+  function updateHeader(title, sc) {
+    document.getElementById('stageBadge').innerText = title;
+    document.getElementById('scoreBadge').innerText = "النقاط: " + sc;
+  }
+
+  function startStage(stg) {
+    currentStage = stg;
+    updateDots(stg);
+    document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+    if (animId) cancelAnimationFrame(animId);
+
+    if (stg <= 3) {
+      document.getElementById('gameStage').classList.add('active');
+      if (stg === 1) initJumpGame();
+      if (stg === 2) initFlowerGame();
+      if (stg === 3) initCakeGame();
+    } else if (stg === 4) {
+      document.getElementById('stageTTT').classList.add('active');
+      initTTT();
+    } else if (stg === 5) {
+      document.getElementById('stageSecret').classList.add('active');
+      updateHeader("الخزنة السرية", "🔒");
+    }
+  }
+
+  function showModal(stgKey) {
+    document.getElementById('mTitle').innerText = messages[stgKey].title;
+    document.getElementById('mText').innerText = messages[stgKey].text;
+    document.getElementById('loveModal').style.display = 'flex';
+  }
+
+  function closeModalAndContinue() {
+    document.getElementById('loveModal').style.display = 'none';
+    startStage(currentStage + 1);
+  }
+
+  /* التحكم بالأزرار */
+  let playerX = 170;
+  function moveLeft() { playerX = Math.max(20, playerX - 35); }
+  function moveRight() { playerX = Math.min(320, playerX + 35); }
+  let actionCallback = null;
+  function actionBtn() { if (actionCallback) actionCallback(); }
+
+  /* رسم وردة حقيقية باللون الأحمر والأسود */
+  function drawRealRose(x, y) {
+    ctx.save();
+    ctx.translate(x, y);
+
+    // البتلات الخارجية والداخلية باللون الأحمر
+    ctx.fillStyle = '#d61c38';
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath();
+      ctx.arc(0, -7, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.rotate((Math.PI * 2) / 5);
+    }
+
+    ctx.fillStyle = '#a80c24';
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath();
+      ctx.arc(0, -4, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.rotate((Math.PI * 2) / 5);
+    }
+
+    // منتصف الوردة باللون الأسود
+    ctx.fillStyle = '#0a0203';
+    ctx.beginPath();
+    ctx.arc(0, 0, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  /* 1. القفز السحابي */
+  function initJumpGame() {
+    updateHeader("1. القفز السحابي", 0);
+    score = 0; playerX = 170;
+    let py = 180, vy = 0;
+    let clouds = [];
+    let isWinning = false, goldY = 340;
+
+    for (let i = 0; i < 5; i++) {
+      clouds.push({ x: Math.random() * 210, y: 300 - i * 65, w: 85 });
+    }
+
+    actionCallback = () => { vy = -8.5; };
+
+    function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (!isWinning) {
+        vy += 0.3; py += vy;
+
+        if (py < 140) {
+          let diff = 140 - py; py = 140;
+          score += Math.floor(diff);
+          updateHeader("1. القفز السحابي", score);
+          clouds.forEach(c => {
+            c.y += diff;
+            if (c.y > canvas.height) { c.y = -20; c.x = Math.random() * 210; }
+          });
+        }
+
+        clouds.forEach(c => {
+          ctx.fillStyle = '#52131d';
+          ctx.beginPath(); ctx.roundRect(c.x, c.y, c.w, 16, 8); ctx.fill();
+
+          if (vy > 0 && playerX > c.x - 10 && playerX < c.x + c.w + 10 && py + 14 >= c.y && py + 14 <= c.y + 16) {
+            vy = -8.5;
+          }
+        });
+
+        if (py > canvas.height) { py = 140; vy = -7.5; }
+        if (score >= 800) isWinning = true;
+      } else {
+        if (goldY > 240) goldY -= 2;
+        py += vy; vy += 0.2;
+        if (py + 14 >= goldY) { py = goldY - 14; vy = 0; }
+
+        ctx.fillStyle = '#b8233e';
+        ctx.beginPath(); ctx.roundRect(35, goldY, 270, 24, 12); ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 12px Tajawal';
+        ctx.textAlign = 'center';
+        ctx.fillText('🌟اشطر كتكوتة يناااااااااس بعشقكككككك يدلوعتييييي🌟', 170, goldY + 16);
+
+        if (goldY <= 240 && Math.abs(py - (goldY - 14)) < 2) {
+          setTimeout(() => showModal(1), 400);
+          return;
+        }
+      }
+
+      // رسم الأرنوب
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.arc(playerX, py, 13, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#b8233e';
+      ctx.beginPath(); ctx.arc(playerX - 4, py - 16, 4, 0, Math.PI * 2); ctx.arc(playerX + 4, py - 16, 4, 0, Math.PI * 2); ctx.fill();
+
+      animId = requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  /* 2. بستان الورود الحمراء والأسود */
+  function initFlowerGame() {
+    updateHeader("2. بستان الورود", 0);
+    score = 0; playerX = 170;
+    let flowers = [];
+
+    function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (Math.random() < 0.05) {
+        flowers.push({ x: Math.random() * 300 + 20, y: -10, speed: Math.random() * 1.5 + 2 });
+      }
+
+      // السلة المخملية
+      ctx.fillStyle = '#801428';
+      ctx.beginPath(); ctx.roundRect(playerX - 35, 300, 70, 20, [0, 0, 8, 8]); ctx.fill();
+
+      for (let i = flowers.length - 1; i >= 0; i--) {
+        let f = flowers[i]; f.y += f.speed;
+
+        // رسم الوردة الحمراء بمنتصف أسود
+        drawRealRose(f.x, f.y);
+
+        if (f.y >= 290 && f.y <= 320 && Math.abs(f.x - playerX) < 40) {
+          score += 10;
+          updateHeader("2. بستان الورود", score);
+          flowers.splice(i, 1);
+        } else if (f.y > canvas.height) flowers.splice(i, 1);
+      }
+
+      if (score >= 100) { showModal(2); return; }
+      animId = requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  /* 3. صانعة الكيك */
+  function initCakeGame() {
+    updateHeader("3. صانعة الكيك", 0);
+    score = 0;
+    let stack = [{ x: 120, w: 100 }];
+    let cur = { x: 0, w: 100, dir: 2 };
+
+    actionCallback = () => {
+      let last = stack[stack.length - 1];
+      let diff = cur.x - last.x;
+      if (Math.abs(diff) < last.w) {
+        let newW = last.w - Math.abs(diff);
+        stack.push({ x: diff > 0 ? cur.x : last.x, w: newW });
+        score += 25;
+        updateHeader("3. صانعة الكيك", score);
+        cur.w = newW; cur.x = 0;
+      }
+    };
+
+    function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      cur.x += cur.dir;
+      if (cur.x + cur.w > canvas.width || cur.x < 0) cur.dir *= -1;
+
+      ctx.fillStyle = '#b8233e';
+      ctx.beginPath(); ctx.roundRect(cur.x, 300 - stack.length * 24, cur.w, 18, 4); ctx.fill();
+
+      stack.forEach((b, idx) => {
+        ctx.fillStyle = '#801428';
+        ctx.beginPath(); ctx.roundRect(b.x, 300 - idx * 24, b.w, 18, 4); ctx.fill();
+      });
+
+      if (stack.length >= 5 || score >= 100) { showModal(3); return; }
+      animId = requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  /* 4. Tic Tac Toe */
+  let tttBoard = ['', '', '', '', '', '', '', '', ''];
+  function initTTT() {
+    updateHeader("4. تحدي X - O", 0);
+    tttBoard = ['', '', '', '', '', '', '', '', ''];
+    let cells = document.querySelectorAll('.ttt-cell');
+    cells.forEach(c => c.innerText = '');
+  }
+
+  function playTTT(idx) {
+    let cells = document.querySelectorAll('.ttt-cell');
+    if (tttBoard[idx] === '') {
+      tttBoard[idx] = '🌹';
+      cells[idx].innerText = '🌹';
+
+      if (checkTTTWin('🌹') || tttBoard.every(b => b !== '')) {
+        setTimeout(() => showModal(4), 300);
+        return;
+      }
+
+      setTimeout(() => {
+        let empty = tttBoard.map((v, i) => v === '' ? i : null).filter(v => v !== null);
+        if (empty.length > 0) {
+          let pick = empty[Math.floor(Math.random() * empty.length)];
+          tttBoard[pick] = '🖤';
+          cells[pick].innerText = '🖤';
+
+          if (checkTTTWin('🖤') || tttBoard.every(b => b !== '')) {
+            setTimeout(() => showModal(4), 300);
+          }
+        }
+      }, 200);
+    }
+  }
+
+  function checkTTTWin(p) {
+    const wins = [
+      [0,1,2], [3
